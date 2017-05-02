@@ -2,7 +2,8 @@
     Author: Adam
     Blog  : www.adamyt.com
 """
-import requests, re, time, os, urllib.request, math
+
+import requests, re, time,  urllib.request, math
  
 headers = {'Host': 'www.icourse163.org',
 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64; rv:49.0) Gecko/20100101 Firefox/49.0',
@@ -135,21 +136,11 @@ def printList_old(coursesList, pageInfo):                           #老办法�
  
 def selectCourse(number, tid = 0):
     try:
-        courseName = tid if tid != 0 else coursesList[number][0]
+        #courseName = tid if tid != 0 else coursesList[number][0]
         tid = tid if tid != 0 else coursesList[number][4]
         pdfList = getMocTermDto(tid)
-        confirm = input('《{}》当前共有{}份pdf文档，确认全部下载？(Y/N)\n'.format(courseName, len(pdfList)))
-        if re.match(r'[Yy]', confirm):
-            while(True):
-                path = input('输入保存路径：\t(ctrl-c结束)\n')
-                try:
-                    if not os.path.isdir(path):
-                        os.mkdir(path)
-                    break
-                except:
-                    print('[-]ERROR:非法路径')
-                    pass
-            downloadPdf(pdfList, path)
+        path='C:\\Users\\nvshen\\desktop\\class'
+        downloadPdf(pdfList, path)
     except:
         print('[-]ERROR: select error\n')
  
@@ -248,7 +239,7 @@ def downloadPdf(pdfList, path):                                     # post to ge
         dataGetLessonUnitLearnVo['c0-param0'] = 'number:{}'.format(contentId)
         dataGetLessonUnitLearnVo['c0-param3'] = 'number:{}'.format(Id)
         dataGetLessonUnitLearnVo['batchId'] = batchId()
-        print('[+]正在下载第{}份 - {} ...\n'.format(count, pdfName))
+        print('\r [+]正在下载第{}份 - {} ...'.format(count, pdfName),end='')
         try:
             resText = getResponse(getLessonUnitLearnVoUrl, dataGetLessonUnitLearnVo)
             pdfUrl = parseLessonUnitLearnVo(resText)
@@ -271,23 +262,17 @@ def main():
         selectCourse(0, keyword)
     else:
         search(keyword)
-    while(True):
-        operate = input('\n接下来的操作:\t( quit退出 ,想重新搜索请quit后输入main() )\n')
-        if re.match(r'^\d+$', operate):
-            selectCourse(int(operate))
-        elif re.match(r'^p\d+$', operate, re.I):
-            turnToPage(keyword, int(operate[1:]))
-        elif re.match(r'^[un]$', operate):
-            turnToPage(keyword, operate)
-        elif re.match(r'^quit$', operate):
-            break
-        else:
-            try:
-                eval(operate)
-            except:
-                print('无效操作')
-    return
- 
- 
-if __name__ == '__main__':
-    main()
+    operate = input('\n输入你要下载文档的课程序号:\n')
+    if re.match(r'^\d+$', operate):
+        selectCourse(int(operate))
+    elif re.match(r'^p\d+$', operate, re.I):
+        turnToPage(keyword, int(operate[1:]))
+    elif re.match(r'^[un]$', operate):
+        turnToPage(keyword, operate)
+    else:
+        try:
+            eval(operate)
+        except:
+            print('无效操作')
+
+main()
